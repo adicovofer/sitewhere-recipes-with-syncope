@@ -71,7 +71,10 @@ services:
   mongodb:
     image: mongo:3
     volumes:
-      - ${VOLUME_ROOT}/mongodb:/data/db
+      # 创建Volume虚拟磁盘：docker volume create --name <名称>  es:docker volume create --name mongodata
+      - /mongodata:/data/db
+      # - ${VOLUME_ROOT}/mongodb:/data/db
+     
       
   mosquitto:
     image: eclipse-mosquitto:1.4.12

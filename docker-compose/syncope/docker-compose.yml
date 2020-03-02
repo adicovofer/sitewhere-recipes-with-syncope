@@ -1,0 +1,50 @@
+version: '3.5'
+services:
+  db: 
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: syncope
+      POSTGRES_USER: syncope
+      POSTGRES_PASSWORD: syncope
+
+  syncope: 
+    depends_on:
+      - db
+    image: apache/syncope:2.1.5
+    ports:
+      - "18080:8080"
+    restart: always
+    environment:
+      DBMS: postgresql
+      DB_URL: jdbc:postgresql://db:5432/syncope
+      DB_USER: syncope
+      DB_PASSWORD: syncope
+      DB_POOL_MAX: 10
+      DB_POOL_MIN: 2
+      OPENJPA_REMOTE_COMMIT: sjvm
+
+  syncope-console: 
+    depends_on:
+      - syncope
+    image: apache/syncope-console:2.1.5
+    ports:
+      - "28080:8080"
+    restart: always
+    environment:
+      CORE_SCHEME: http
+      CORE_HOST: syncope
+      CORE_PORT: 8080
+
+  syncope-enduser: 
+    depends_on:
+      - syncope
+    image: apache/syncope-enduser:2.1.5
+    ports:
+      - "38080:8080"
+    restart: always
+    environment:
+      CORE_SCHEME: http
+      CORE_HOST: syncope
+      CORE_PORT: 8080
+      DOMAIN: Master
